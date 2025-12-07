@@ -49,6 +49,16 @@ public class StabSettings : BaseBoot
     [SerializeField] private Button _backToMain;
     [SerializeField] private Button _settings;
 
+    [Space]
+    [SerializeField] private TMP_InputField _mazeH;
+    [SerializeField] private TMP_InputField _mazeW;
+    [SerializeField] private TMP_InputField _mazeTrapsMin;
+    [SerializeField] private TMP_InputField _mazeTrapsMax;
+    [SerializeField] private Button _isBall;
+    [SerializeField] private Button _isPlatform;
+    [SerializeField] private Image _selectImageT;
+    [SerializeField] private Image _selectImageS;
+
     public int defaultBaudRate = 9600;
 
     public float midValX = 0;
@@ -115,6 +125,22 @@ public class StabSettings : BaseBoot
 
         _sensInput.text = StaticParams.SENSITIVE.ToString();
 
+        _mazeW.text = GameManager.Instance.Data.mazeW.ToString();
+        _mazeH.text = GameManager.Instance.Data.mazeH.ToString();
+        _mazeTrapsMin.text = GameManager.Instance.Data.mazeTrapsMin.ToString();
+        _mazeTrapsMax.text = GameManager.Instance.Data.mazeTrapsMax.ToString();
+
+        SwichBtnState();
+     
+
+        _mazeW.onEndEdit.AddListener(delegate { SetMazeW(); });
+        _mazeH.onEndEdit.AddListener(delegate { SetMazeH(); });
+        _mazeTrapsMin.onEndEdit.AddListener(delegate { SetMazeTrapsMin(); });
+        _mazeTrapsMax.onEndEdit.AddListener(delegate { SetMazeTrapsMax(); });
+        _isBall.onClick.AddListener(delegate { SetValue(); });
+        _isPlatform.onClick.AddListener(delegate { SetValue(); });
+
+
 
         _sensUp.onClick.AddListener(() => SetSensitiveButton(0));
         _sensDown.onClick.AddListener(() => SetSensitiveButton(1));
@@ -128,16 +154,10 @@ public class StabSettings : BaseBoot
         readThread.IsBackground = true;
 
         FindComPort();
-
-
-        
-
-       
     }
 
     private void OpenResult()
-    {
-        Debug.Log("123123");
+    { 
         _canvas.SetActive(false);
         _loadRecordsData.UpdateList();
         _resultPanel.SetActive(true);
@@ -147,6 +167,38 @@ public class StabSettings : BaseBoot
     {
         _resultPanel.SetActive(false);
         _canvas.SetActive(true);
+    }
+
+
+    private void SetMazeH()
+    {
+        GameManager.Instance.Data.mazeH = Convert.ToInt32(_mazeH.text);
+    }
+    private void SetMazeW()
+    {
+        GameManager.Instance.Data.mazeW = Convert.ToInt32(_mazeW.text);
+    }
+    private void SetMazeTrapsMin()
+    {
+        GameManager.Instance.Data.mazeTrapsMin = Convert.ToInt32(_mazeTrapsMin.text);
+    }
+    private void SetMazeTrapsMax()
+    {
+        GameManager.Instance.Data.mazeTrapsMax = Convert.ToInt32(_mazeTrapsMax.text);
+    }
+
+    private void SetValue()
+    {
+        GameManager.Instance.Data.isMazeBall = !GameManager.Instance.Data.isMazeBall;
+        Debug.LogError(GameManager.Instance.Data.isMazeBall);
+        SwichBtnState();
+    }
+
+
+    private void SwichBtnState()
+    {
+        _selectImageT.enabled = GameManager.Instance.Data.isMazeBall;
+        _selectImageS.enabled = !GameManager.Instance.Data.isMazeBall;
     }
 
     private void SetSensitiveButton(int operation)

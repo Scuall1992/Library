@@ -16,6 +16,10 @@ public class MazeSpawner : BaseBoot
     [SerializeField] private Camera _camera;
     [SerializeField] private InputVariant inputVariant;
     [SerializeField] private TextMeshProUGUI _textW;
+    [Space]
+    [SerializeField] private FpsMovement fpsMovement;
+    [SerializeField] private TextMeshProUGUI _type;
+    [SerializeField] public BallController ballMovement;
 
    
     public Vector3 CellSize = new Vector3(1, 1, 0);
@@ -33,6 +37,24 @@ public class MazeSpawner : BaseBoot
 
     }
 
+    private void ChangeType()
+    {
+       // ballMovement = _ball.GetComponent<BallController>();
+        Debug.LogError(ballMovement.name);
+        if (GameManager.Instance.Data.isMazeBall)
+        {
+            _type.text = "Шар";
+            ballMovement.enabled = true;
+            fpsMovement.enabled = false;
+        }
+        else
+        {
+            _type.text = "Платформа";
+            ballMovement.enabled = false;
+            fpsMovement.enabled = true;
+        }
+    }
+
     public void StartSpawn()
     {
         MazeGeneratorNew generator = new MazeGeneratorNew();
@@ -46,12 +68,10 @@ public class MazeSpawner : BaseBoot
         float halfWidth = (width - 1f) / 2f;
         float halfHeight = (height - 1f) / 2f;
 
-        // ✅ ГАРАНТИРОВАННО 3-5 ЛОВУШЕК!
         List<Cell> trapCandidates = new List<Cell>();
         Vector2Int startPos = new Vector2Int(0, 0);
         Vector2Int finishPos = new Vector2Int(finishCell.X, finishCell.Y);
 
-        // Спавн клеток + сбор кандидатов
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -69,14 +89,12 @@ public class MazeSpawner : BaseBoot
                 cell.WallFront.SetActive(maze[x, y].WallFront);
                 cell.WallBottom.SetActive(maze[x, y].WallBottom);
 
-                // ✅ ЛОВУШКИ ТОЛЬКО В "ХОРОШИХ" КЛЕТКАХ:
                 Vector2Int cellPos = new Vector2Int(x, y);
 
-                // Исключаем: start, finish, их соседей + клетки с Distance < 3 (ранние)
                 if (cellPos != startPos && cellPos != finishPos &&
                     !IsNeighbor(cellPos, startPos, 1) &&
                     !IsNeighbor(cellPos, finishPos, 1) &&
-                    maze[x, y].Distance >= 3) // ✅ ДАЛЬНИЕ клетки!
+                    maze[x, y].Distance >= 3) 
                 {
                     trapCandidates.Add(cell);
                 }
@@ -85,7 +103,6 @@ public class MazeSpawner : BaseBoot
 
         _zone.transform.localPosition = Vector3.zero;
 
-        // Шар в [0,0]
         if (!isBallInstantiated)
         {
             float startX = (0 - halfWidth) * CellSize.x;
@@ -98,53 +115,41 @@ public class MazeSpawner : BaseBoot
             isBallInstantiated = true;
         }
 
-        // Финиш
         float finishX = (finishCell.X - halfWidth) * CellSize.x;
         float finishZ = (finishCell.Y - halfHeight) * CellSize.z;
         var finishObj = Instantiate(_finisPrefab, new Vector3(finishX, 0, finishZ), Quaternion.identity, _zone);
 
 
-        // Камера
         _camera.orthographicSize = Mathf.Max(width, height) * CellSize.x * 0.6f;
         _camera.transform.position = new Vector3(0, _camera.transform.position.y, 0);
 
-        // ✅ ГАРАНТИРОВАННО 3-5 ЛОВУШЕК!
         PlaceGuaranteedTraps(trapCandidates, maze);
+
+        ChangeType();
     }
 
     private void PlaceGuaranteedTraps(List<Cell> candidates, MazeGeneratorCell[,] maze)
     {
         Debug.Log($"🔥 Кандидатов для ловушек: {candidates.Count}");
 
-        // ✅ ФИКСИРОВАННО 3-5 ЛОВУШЕК (НЕ %!)
-        int numTraps = UnityEngine.Random.Range(3, 6); // 3,4,5
+        int numTraps = UnityEngine.Random.Range(GameManager.Instance.Data.mazeTrapsMin, GameManager.Instance.Data.mazeTrapsMax); 
         int trapsToPlace = Mathf.Min(numTraps, candidates.Count);
 
-        if (trapsToPlace == 0)
-        {
-            Debug.LogWarning("❌ Мало кандидатов! Увеличиваем размер maze или убираем фильтры.");
-            return;
-        }
+     
 
-        Debug.Log($"🎯 Ставим {trapsToPlace} ловушек из {numTraps} запланированных");
 
-        // Перемешиваем для рандома
         ShuffleList(candidates);
 
-        // Ставим ровно trapsToPlace ловушек
         for (int i = 0; i < trapsToPlace; i++)
         {
             Cell trapCell = candidates[i];
 
-            // ✅ Активация
             trapCell.TrapTrigger?.SetActive(true);
             trapCell.TrapVisual?.SetActive(true);
 
-            Debug.Log($"✅ Ловушка #{i + 1}/ {trapsToPlace} в [{trapCell.mazeX}, {trapCell.mazeY}] (Distance: {maze[trapCell.mazeX, trapCell.mazeY].Distance})");
         }
     }
 
-    // ✅ ШЕЙКЕР для рандома (Fisher-Yates)
     private void ShuffleList<T>(List<T> list)
     {
         for (int i = list.Count - 1; i > 0; i--)
@@ -156,21 +161,10 @@ public class MazeSpawner : BaseBoot
         }
     }
 
-    // ✅ Расширенный IsNeighbor (расстояние)
     private bool IsNeighbor(Vector2Int a, Vector2Int b, int maxDist = 1)
     {
         int dx = Mathf.Abs(a.x - b.x);
         int dy = Mathf.Abs(a.y - b.y);
         return (dx <= maxDist && dy <= maxDist && (dx + dy > 0));
-    }
-
-
-    private Vector2Int GetCellPosition(Cell cell, MazeGeneratorCell[,] maze)
-    {
-        // Предполагаем, что в MazeGeneratorCell есть X,Y, но Cell - GO. Нужно добавить в Cell public int X,Y; и сетать при спавне.
-        // В спавне: cell.X = x; cell.Y = y;
-        // Тогда return new Vector2Int(cell.X, cell.Y);
-        // Пока заглушка - реализуй!
-        return Vector2Int.zero; // FIX ME
     }
 }

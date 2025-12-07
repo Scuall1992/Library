@@ -9,8 +9,9 @@ public class MazeGeneratorNew
 
     public MazeGeneratorCell[,] GenerateMaze()
     {
-        Width = Random.Range(3, 7);
-        Height = Random.Range(3, 7);
+        
+        Width = GameManager.Instance.Data.mazeW;//Random.Range(3, 7);
+        Height = GameManager.Instance.Data.mazeH; //Random.Range(3, 7);
         MazeGeneratorCell[,] cells = new MazeGeneratorCell[Width, Height];
 
         for (int x = 0; x < cells.GetLength(0); x++)

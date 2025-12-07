@@ -63,8 +63,6 @@ public class BallController : BaseBoot
         comPortName = StaticParams.COM_PORT_NAME;
 
 
-        if (isBall)
-        { 
             rb = GameObject.FindWithTag("ball").GetComponent<Rigidbody>();
             ms = GameObject.FindWithTag("spawner").GetComponent<MazeSpawner>();
             Debug.LogError(ms.name);
@@ -77,11 +75,7 @@ public class BallController : BaseBoot
             {
                 Debug.LogWarning("Player object with tag 'Player' not found.");
             }
-        }
-        else
-        {
-            targetRotation = transform.rotation;
-        }
+        
     }
 
     private void OnDisable()
@@ -180,31 +174,12 @@ public class BallController : BaseBoot
 
     private void FixedUpdate()
     {
-        if (isBall)
-        {
+       
             Debug.LogError("Ball");
             BallMovement();
-        }
-        else 
-        {
-            Debug.LogError("platform");
-            PlatformMovement();
-        }
+      
     }
 
-
-    private void PlatformMovement()
-    {
-        var relativeX = (x_stab + midValX) / (sens_val / (float)Math.Pow(2, sens - 1)) / 100;
-        var relativeY = (y_stab + midValY) / (sens_val / (float)Math.Pow(2, sens - 1)) / 100;
-
-        targetPitch = Mathf.Clamp(relativeY * maxTiltAngle, -maxTiltAngle, maxTiltAngle);
-        targetRoll = Mathf.Clamp(-relativeX * maxTiltAngle, -maxTiltAngle, maxTiltAngle);
-
-        targetRotation = Quaternion.Euler(targetPitch, 0, targetRoll);
-
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * tiltSpeed);
-    }
 
     private void BallMovement()
     {

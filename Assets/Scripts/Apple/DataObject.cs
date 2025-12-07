@@ -24,6 +24,13 @@ public class DataObject : ScriptableObject
     [SerializeField] public bool playMusic;
     [SerializeField] public float sensitive;
 
+    [Space]
+    [SerializeField] public int mazeH;
+    [SerializeField] public int mazeW;
+    [SerializeField] public int mazeTrapsMin;
+    [SerializeField] public int mazeTrapsMax;
+    [SerializeField] public bool isMazeBall;
+
     public DataObject()
     {
         level = 1;
@@ -43,6 +50,11 @@ public class DataObject : ScriptableObject
         isMarathonModeEnd = false;
         playMusic = true;
         sensitive = 1;
+        mazeH = 4;
+        mazeW = 4;
+        mazeTrapsMin = 0;
+        mazeTrapsMax = 2;
+        isMazeBall = true;
     }
 
 }
