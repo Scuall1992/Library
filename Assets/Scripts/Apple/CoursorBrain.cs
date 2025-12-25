@@ -251,8 +251,6 @@ public class CoursorBrain : BaseBoot
     {
         StopReading();
 
-        Screen.fullScreenMode = FullScreenMode.Windowed;
-        Screen.SetResolution(1024, 1024, false);
     }
 
 

@@ -136,8 +136,6 @@ public class FpsMovement : MonoBehaviour
     {
         StopReading();
 
-        Screen.fullScreenMode = FullScreenMode.Windowed;
-        Screen.SetResolution(1024, 1024, false);
     }
 
     public void StopReading()
@@ -147,6 +145,12 @@ public class FpsMovement : MonoBehaviour
         {
             readThread.Join();
         }
+        else
+        {
+            readThread.Abort();
+        }
+
+        Debug.LogError("STOP READING");
     }
 
 }

@@ -209,8 +209,7 @@ public class BallController : BaseBoot
     {
         StopReading();
 
-        Screen.fullScreenMode = FullScreenMode.Windowed;
-        Screen.SetResolution(1024, 1024, false);
+       
     }
 
     public void StopReading()
@@ -220,6 +219,12 @@ public class BallController : BaseBoot
         {
             readThread.Join();
         }
+        else
+        {
+            readThread.Abort();
+        }
+
+        Debug.LogError("STOP READING");
     }
 
 }
