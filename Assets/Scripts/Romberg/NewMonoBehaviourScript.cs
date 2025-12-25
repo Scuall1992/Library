@@ -76,12 +76,6 @@ public class NewMonoBehaviourScript : MonoBehaviour
         return new Vector2(xPos, yPos);
     }
 
-
-    Vector2 GetAnchoredPosition(RectTransform rt)
-    {
-        return rt.anchoredPosition;
-    }
-
     public GameObject DrawPoint(Vector2 position, Color color)
     {
         GameObject pointGO = new GameObject("Point");
@@ -176,6 +170,29 @@ public class NewMonoBehaviourScript : MonoBehaviour
         back.onClick.AddListener(BackToMenu);
     }
 
+    private void ClearPreviousResults()
+    {
+        dots.Clear();
+        dotsBuffer.Clear();
+
+        foreach (Transform child in graphArea)
+        {
+            Destroy(child.gameObject);
+        }
+
+        text2.text = "";      
+        text3.text = "";      
+        text4.text = "";      
+        textI.text = "";      
+        textII.text = "";     
+        textIII.text = "";    
+        textIV.text = "";     
+
+        time = 0f;
+        testBool = true;
+    }
+
+
     private void BackToMenu()
     {
         keepReading = false;
@@ -197,6 +214,8 @@ public class NewMonoBehaviourScript : MonoBehaviour
 
     void StartReading()
     {
+        ClearPreviousResults();
+
         timer.StartTimer();
         readThread = new Thread(ReadAndProcessComPort);
         readThread.IsBackground = true;
@@ -318,8 +337,8 @@ public class NewMonoBehaviourScript : MonoBehaviour
 
         //вывести отдельно по X и Y 
         //Размах колебания по гориз и по вертик
-        text2.text += rmsX.ToString();
-        text3.text += rmsY.ToString();
+        text2.text += rmsX.ToString("0.0");
+        text3.text += rmsY.ToString("0.0");
         //return new List<double>() { rmsX, rmsY };
     }
 
@@ -333,7 +352,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
                               + Math.Pow((dots[i + 1].Y - dots[i].Y), 2));
         }
 
-        text4.text = length.ToString();
+        text4.text = length.ToString("0.0");
         //return length;
     }
 
@@ -372,10 +391,10 @@ public class NewMonoBehaviourScript : MonoBehaviour
         //I = 1
         //II = 2
         //III = 2
-        textI.text += (I / dots.Count * 100).ToString();
-        textII.text += (II / dots.Count * 100).ToString();
-        textIII.text += (III / dots.Count * 100).ToString();
-        textIV.text += (IV / dots.Count * 100).ToString();
+        textI.text += (I / dots.Count * 100).ToString("0.0");
+        textII.text += (II / dots.Count * 100).ToString("0.0");
+        textIII.text += (III / dots.Count * 100).ToString("0.0");
+        textIV.text += (IV / dots.Count * 100).ToString("0.0");
 
     } 
 
