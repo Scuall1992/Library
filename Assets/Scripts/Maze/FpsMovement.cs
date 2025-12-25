@@ -40,11 +40,7 @@ public class FpsMovement : MonoBehaviour
     {
         comPortName = StaticParams.COM_PORT_NAME;
         targetRotation = transform.rotation;
-
-        readThread = new Thread(ReadAndProcessComPort);
-        readThread.IsBackground = true;
-        keepReading = true;
-        readThread.Start();
+        
     }
 
     private void OnDisable()
@@ -52,6 +48,16 @@ public class FpsMovement : MonoBehaviour
         StopReading();
     }
 
+    private void OnEnable()
+    {
+        if (keepReading || (readThread != null && readThread.IsAlive))
+            return;
+
+        readThread = new Thread(ReadAndProcessComPort);
+        readThread.IsBackground = true;
+        keepReading = true;
+        readThread.Start();
+    }
 
     void ReadAndProcessComPort()
     {

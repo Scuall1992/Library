@@ -75,12 +75,7 @@ public class BallController : BaseBoot
             {
                 Debug.LogWarning("Player object with tag 'Player' not found.");
             }
-
-        sens_val = 140f;
-        readThread = new Thread(ReadAndProcessComPort);
-        readThread.IsBackground = true;
-        keepReading = true;
-        readThread.Start();
+        
     }
 
     private void OnDisable()
@@ -111,6 +106,16 @@ public class BallController : BaseBoot
 
     }
 
+    private void OnEnable()
+    {
+        if (keepReading || (readThread != null && readThread.IsAlive))
+            return;
+
+        readThread = new Thread(ReadAndProcessComPort);
+        readThread.IsBackground = true;
+        keepReading = true;
+        readThread.Start();
+    }
 
     void ReadAndProcessComPort()
     {
