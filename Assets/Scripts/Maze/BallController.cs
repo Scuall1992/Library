@@ -175,7 +175,6 @@ public class BallController : BaseBoot
     private void FixedUpdate()
     {
        
-            Debug.LogError("Ball");
             BallMovement();
       
     }

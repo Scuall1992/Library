@@ -38,7 +38,5 @@ public class UIControllerMaze : BaseBoot
         _fpsMovement.StopReading();
         SceneManager.LoadScene(0);
 
-        Screen.fullScreenMode = FullScreenMode.Windowed;
-        Screen.SetResolution(1024, 1024, false);
     }
 }
