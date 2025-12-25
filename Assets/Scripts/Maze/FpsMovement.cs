@@ -147,10 +147,6 @@ public class FpsMovement : MonoBehaviour
         {
             readThread.Join();
         }
-        else
-        {
-            readThread.Abort();
-        }
 
         Debug.LogError("STOP READING");
     }

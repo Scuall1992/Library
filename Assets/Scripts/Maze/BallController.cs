@@ -221,10 +221,6 @@ public class BallController : BaseBoot
         {
             readThread.Join();
         }
-        else
-        {
-            readThread.Abort();
-        }
 
         Debug.LogError("STOP READING");
     }

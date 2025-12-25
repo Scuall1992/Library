@@ -9,6 +9,7 @@ public class UIControllerMaze : BaseBoot
 {
     [SerializeField] private Button _backToMenu;
     [SerializeField] private FpsMovement _fpsMovement;
+    [SerializeField] private BallController _ball;
     
     private BallController _ballController;
 
@@ -34,7 +35,7 @@ public class UIControllerMaze : BaseBoot
     {
         TimerMaze.onResetData?.Invoke();
 
-        _ballController.StopReading();
+        _ball.StopReading();
         _fpsMovement.StopReading();
         SceneManager.LoadScene(0);
 

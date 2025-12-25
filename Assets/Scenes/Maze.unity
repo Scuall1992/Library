@@ -571,6 +571,7 @@ MonoBehaviour:
   _bootDelay: 0
   _backToMenu: {fileID: 1405911735}
   _fpsMovement: {fileID: 580411196}
+  _ball: {fileID: 1680945552}
 --- !u!1 &368565726
 GameObject:
   m_ObjectHideFlags: 0
